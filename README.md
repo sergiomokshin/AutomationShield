@@ -1,8 +1,8 @@
 
-Ele foi desenvolvido com o objetivo de simplificar a criação de projetos de automação. É compatível com o Arduino Nano V3 e pode ser usada em diversos projetos de automação, monitoramento, temporizadores, entre outros. 
+
+Desenvolvido com o objetivo de simplificar a criação de projetos de automação. É compatível com o Arduino Nano V3 e pode ser usada em diversos projetos de automação, monitoramento, temporizadores, entre outros. 
 
 ![Automation Shield](http://2.bp.blogspot.com/-3SkegE5IOJI/VMkj9KsNF3I/AAAAAAAAHg4/j7NDYE7RcLY/s1600/IMG_20120922_233114_621.jpg)
-
 
 Os IOs da placa possuem Jumpers que permitem a inativação ou troca do pino utilizado no Arduino, permitindo expansão ou troca de funcionalidades.
 
@@ -29,14 +29,11 @@ Exemplos de projetos desenvolvidos com o Shield
 WebServer de automação com enc28j60.
 ![Automation Shield](http://4.bp.blogspot.com/-H1HWUSNyQPk/VNZYdfWpdfI/AAAAAAAAHrw/bjMMNj8l8OM/s1600/enc.png)
 
-
-
 WebServer de automação com WS5100.
 ![Automation Shield](http://4.bp.blogspot.com/-H1HWUSNyQPk/VNZYdfWpdfI/AAAAAAAAHrw/bjMMNj8l8OM/s1600/enc.png)
 
 Temporizador de saídas.
 ![Automation Shield](http://2.bp.blogspot.com/-xuz5d9oZ_Q8/VNZYcAItJpI/AAAAAAAAHrk/O4r85BD7HoU/s1600/Ethernet.png)
-
 
 Cada projeto tem características individuais, que exigem recursos diferenciados de processamento, memória, comunicação serial, leituras digitais, analógicas, PWM entre outros. Quando usamos a plataforma Arduino, devemos avaliar entre as versões disponíveis, qual atende os requisitos funcionais do nosso projeto.
 
@@ -48,9 +45,7 @@ Teste Básico de acionamento das saídas do Shield
 Sergio Mokshin
 Automação Livre
 Jan/2015
- 
 */
-
 
 #define PIN_RED 6
 #define PIN_GREEN 5
