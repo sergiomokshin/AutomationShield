@@ -1,2 +1,2 @@
 # AutomationShield
-Exemplos de projetos com o AutomatioShield
+Exemplos de projetos com o AutomationShield
