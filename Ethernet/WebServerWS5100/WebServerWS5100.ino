@@ -191,7 +191,7 @@ void loop(){
           client.println(F("<tr><td width=130px>S 3 - "));
           if(S3 == HIGH)
           {
-            client.println(F("Desligado"));
+            client.println(F("Ligado"));
             client.println(F("</td><td>"));
             client.println(F("<a class='btn btn-danger btn-lg' href='?S3Desligado'>Desligar</buttLigado>"));
           }
