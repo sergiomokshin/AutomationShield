@@ -30,9 +30,9 @@ int ValueSaveSaida3 = 0;
 int ValueSaveSaida4 = 0;
 
 // ethernet interface ip address
-static byte myip[] = { 192,168,1,200 };
+static byte myip[] = { 192, 168, 1, 200 };
 // gateway ip address
-static byte gwip[] = { 192,168,1,1 };
+static byte gwip[] = { 192, 168, 1, 1 };
 
 // ethernet mac address - must be unique on your network
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
