@@ -23,11 +23,19 @@ int MemSaveSaida1 = 1;
 int MemSaveSaida2 = 2;
 int MemSaveSaida3 = 3;
 int MemSaveSaida4 = 4;
+int MemSaveRed    = 5;
+int MemSaveBlue   = 6;
+int MemSaveGreen  = 7;
 
 int ValueSaveSaida1 = 0;
 int ValueSaveSaida2 = 0;
 int ValueSaveSaida3 = 0;
 int ValueSaveSaida4 = 0;
+int ValueSaveRed = 0;
+int ValueSaveBlue = 0;
+int ValueSaveGreen = 0;
+
+
 
 // ethernet interface ip address
 static byte myip[] = { 192, 168, 1, 200 };
@@ -36,7 +44,7 @@ static byte gwip[] = { 192, 168, 1, 1 };
 
 // ethernet mac address - must be unique on your network
 static byte mymac[] = { 0x74,0x69,0x69,0x2D,0x30,0x31 };
-byte Ethernet::buffer[1000]; // tcp/ip send and receive buffer
+byte Ethernet::buffer[1100]; // tcp/ip send and receive buffer
 BufferFiller bfill;
 
 void setup(){  
@@ -50,7 +58,7 @@ void setup(){
   //EEPROM.write(MemSaveSaida4, 0);  
   
   
-  Serial.begin(57600);
+  Serial.begin(38400);
   Serial.println("Iniciando Setup");      
   
   pinMode(A0, OUTPUT);
@@ -63,11 +71,20 @@ void setup(){
   ValueSaveSaida2 = EEPROM.read(MemSaveSaida2);
   ValueSaveSaida3 = EEPROM.read(MemSaveSaida3);
   ValueSaveSaida4 = EEPROM.read(MemSaveSaida4);
+  ValueSaveRed = EEPROM.read(MemSaveRed);
+  ValueSaveBlue = EEPROM.read(MemSaveBlue);
+  ValueSaveGreen = EEPROM.read(MemSaveGreen);
     
   digitalWrite(A0, ValueSaveSaida1);
   digitalWrite(A1, ValueSaveSaida2);
   digitalWrite(A2, ValueSaveSaida3);
-  digitalWrite(A3, ValueSaveSaida4);  
+  digitalWrite(A3, ValueSaveSaida4);
+
+
+   analogWrite(5, ValueSaveRed);  
+   analogWrite(6, ValueSaveGreen);  
+   analogWrite(3, ValueSaveBlue);     
+  
   
   
   if (ether.begin(sizeof Ethernet::buffer, mymac) == 0) 
@@ -121,7 +138,7 @@ static word homePage() {
   bfill.emit_p(PSTR("<tbody>"));
   
   //SAIDA 1
-  bfill.emit_p(PSTR("<tr><td width=200px>Saida 1 - "));
+  bfill.emit_p(PSTR("<tr><td width=200px>S 1 - "));
   if(S1 == HIGH)
   {
     bfill.emit_p(PSTR("On"));
@@ -138,7 +155,7 @@ static word homePage() {
   
   
   //SAIDA 2
-  bfill.emit_p(PSTR("<tr><td width=200px>Saida 2 - "));
+  bfill.emit_p(PSTR("<tr><td>S  2 - "));
   if(S2 == HIGH)
   {
     bfill.emit_p(PSTR("On"));
@@ -147,7 +164,7 @@ static word homePage() {
   }
   else
   {
-    bfill.emit_p(PSTR("Desligado"));
+    bfill.emit_p(PSTR("Off"));
     bfill.emit_p(PSTR("</td><td>"));
     bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S2/ON' type='button'>Ligar</button>"));        
   }        
@@ -155,16 +172,16 @@ static word homePage() {
 
 
   //SAIDA 3
-  bfill.emit_p(PSTR("<tr><td width=200px>Saida 3 - "));
+  bfill.emit_p(PSTR("<tr><td>S 3 - "));
   if(S3 == HIGH)
   {
-    bfill.emit_p(PSTR("Off"));
+    bfill.emit_p(PSTR("On"));
     bfill.emit_p(PSTR("</td><td>"));
     bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S3/OFF' type='button'>Desligar</button>"));
   }
   else
   {
-    bfill.emit_p(PSTR("Desligado"));
+    bfill.emit_p(PSTR("Off"));
     bfill.emit_p(PSTR("</b></td><td>"));
     bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S3/ON' type='button'>Ligar</button>"));        
   }        
@@ -172,21 +189,38 @@ static word homePage() {
 
 
   //SAIDA 4
-  bfill.emit_p(PSTR("<tr><td width=200px>Saida 4 - "));
+  bfill.emit_p(PSTR("<tr><td>S  4 - "));
   if(S4 == HIGH)
   {
-    bfill.emit_p(PSTR("Ligado"));
+    bfill.emit_p(PSTR("On"));
     bfill.emit_p(PSTR("</td><td>"));
     bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S4/OFF' type='button'>Desligar</button>"));
   }
   else
   {
-    bfill.emit_p(PSTR("Desligado"));
+    bfill.emit_p(PSTR("Off"));
     bfill.emit_p(PSTR("</td><td>"));
     bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S4/ON' type='button'>Ligar</button>"));        
   }        
   bfill.emit_p(PSTR("</td></tr>"));
-
+  
+  //RGB
+  bfill.emit_p(PSTR("<tr><td>Red - "));
+  if(ValueSaveRed == 255)
+  {
+    bfill.emit_p(PSTR("On"));
+    bfill.emit_p(PSTR("</td><td>"));
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/R/OFF' type='button'>Desligar</button>"));
+  }
+  else
+  {
+    bfill.emit_p(PSTR("Off"));
+    bfill.emit_p(PSTR("</td><td>"));
+    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/R/ON' type='button'>Ligar</button>"));        
+  }        
+  bfill.emit_p(PSTR("</td></tr>"));
+  
+  
   bfill.emit_p(PSTR("<tr><td colspan=2>Chave 1 - "));
   if(Chave1 == HIGH)
   {
@@ -296,31 +330,43 @@ void WebServer()
   if(strstr((char *)Ethernet::buffer + pos, "GET /R/ON") != 0) {
       Serial.println("Received OFF command");
       analogWrite(5, 255);  
+      EEPROM.write(MemSaveRed, 255);
+      ValueSaveRed = 255;
    }
    
    if(strstr((char *)Ethernet::buffer + pos, "GET /R/OFF") != 0) {
       Serial.println("Received OFF command");
       analogWrite(5, 0);  
+      EEPROM.write(MemSaveRed, 0);
+      ValueSaveRed = 0;
    }
    
    if(strstr((char *)Ethernet::buffer + pos, "GET /G/ON") != 0) {
       Serial.println("Received OFF command");
       analogWrite(6, 255);  
+      EEPROM.write(MemSaveGreen, 255);      
+      ValueSaveGreen = 255;
    }
    
    if(strstr((char *)Ethernet::buffer + pos, "GET /G/OFF") != 0) {
       Serial.println("Received OFF command");
       analogWrite(6, 0);  
+      EEPROM.write(MemSaveGreen, 0);            
+      ValueSaveGreen = 0;
    }
    
    if(strstr((char *)Ethernet::buffer + pos, "GET /B/ON") != 0) {
       Serial.println("Received OFF command");
       analogWrite(3, 255);  
+      EEPROM.write(MemSaveBlue, 255);       
+      ValueSaveBlue = 255;     
    }
    
    if(strstr((char *)Ethernet::buffer + pos, "GET /B/OFF") != 0) {
       Serial.println("Received OFF command");
       analogWrite(3, 0);  
+      EEPROM.write(MemSaveBlue, 0);                        
+      ValueSaveBlue = 0;      
    }
    
    
@@ -329,4 +375,6 @@ void WebServer()
     ether.httpServerReply(homePage());   
    }   
 }
+
+
 
