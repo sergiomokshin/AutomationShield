@@ -31,9 +31,9 @@ int ValueSaveSaida1 = 0;
 int ValueSaveSaida2 = 0;
 int ValueSaveSaida3 = 0;
 int ValueSaveSaida4 = 0;
-int ValueSaveRed = 0;
-int ValueSaveBlue = 0;
-int ValueSaveGreen = 0;
+int ValueSaveRed    = 0;
+int ValueSaveBlue   = 0;
+int ValueSaveGreen  = 0;
 
 
 
@@ -81,6 +81,8 @@ void setup(){
   digitalWrite(A3, ValueSaveSaida4);
 
 
+     
+  
    analogWrite(5, ValueSaveRed);  
    analogWrite(6, ValueSaveGreen);  
    analogWrite(3, ValueSaveBlue);     
@@ -95,12 +97,7 @@ void setup(){
   ether.staticSetup(myip, gwip);
   ether.printIp("IP:  ", ether.myip);
   ether.printIp("GW:  ", ether.gwip);  
-  ether.printIp("DNS: ", ether.dnsip);  
-   
-
-  analogWrite(6, 0);  
-  analogWrite(5, 0);    
-  analogWrite(3, 0);  
+  ether.printIp("DNS: ", ether.dnsip);    
    
   Serial.println("Finalizando Setup");      
 }
@@ -134,94 +131,88 @@ static word homePage() {
   bfill.emit_p(PSTR("<h2>Interface de comando</h2>"));
   bfill.emit_p(PSTR("<div class='row'>"));
   bfill.emit_p(PSTR("<div class='col-md-6'>"));
-  bfill.emit_p(PSTR("<table class='table table-bordered'>"));
-  bfill.emit_p(PSTR("<tbody>"));
   
   //SAIDA 1
-  bfill.emit_p(PSTR("<tr><td width=200px>S 1 - "));
   if(S1 == HIGH)
   {
-    bfill.emit_p(PSTR("On"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S1/OFF' type='button'>Desligar</button>"));
+    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S1/OFF' type='button'>S1 - ON -> Desligar</button></a>"));        
   }
   else
   {
-    bfill.emit_p(PSTR("Off"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S1/ON' type='button'>Ligar</button>"));        
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S1/ON' type='button'>S1 - OFF -> Ligar</button></a>"));        
   }        
-  bfill.emit_p(PSTR("</td></tr>"));
+  bfill.emit_p(PSTR("<br><br>"));
   
-  
-  //SAIDA 2
-  bfill.emit_p(PSTR("<tr><td>S  2 - "));
+   //SAIDA 2
   if(S2 == HIGH)
   {
-    bfill.emit_p(PSTR("On"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S2/OFF' type='button'>Desligar</button>"));
+    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S2/OFF' type='button'>S2 - ON -> Desligar</button></a>"));        
   }
   else
   {
-    bfill.emit_p(PSTR("Off"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S2/ON' type='button'>Ligar</button>"));        
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S2/ON' type='button'>S2 - OFF -> Ligar</button></a>"));        
   }        
-  bfill.emit_p(PSTR("</td></tr>"));
-
-
-  //SAIDA 3
-  bfill.emit_p(PSTR("<tr><td>S 3 - "));
+  bfill.emit_p(PSTR("<br><br>"));
+  
+   //SAIDA 3
   if(S3 == HIGH)
   {
-    bfill.emit_p(PSTR("On"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S3/OFF' type='button'>Desligar</button>"));
+    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S3/OFF' type='button'>S3 - ON -> Desligar</button></a>"));        
   }
   else
   {
-    bfill.emit_p(PSTR("Off"));
-    bfill.emit_p(PSTR("</b></td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S3/ON' type='button'>Ligar</button>"));        
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S3/ON' type='button'>S3 - OFF -> Ligar</button></a>"));        
   }        
-  bfill.emit_p(PSTR("</td></tr>"));
-
-
-  //SAIDA 4
-  bfill.emit_p(PSTR("<tr><td>S  4 - "));
-  if(S4 == HIGH)
-  {
-    bfill.emit_p(PSTR("On"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S4/OFF' type='button'>Desligar</button>"));
-  }
-  else
-  {
-    bfill.emit_p(PSTR("Off"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S4/ON' type='button'>Ligar</button>"));        
-  }        
-  bfill.emit_p(PSTR("</td></tr>"));
+  bfill.emit_p(PSTR("<br><br>"));
   
-  //RGB
-  bfill.emit_p(PSTR("<tr><td>Red - "));
+   //SAIDA 4
+  if(S1 == HIGH)
+  {
+    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S4/OFF' type='button'>S4 - ON -> Desligar</button></a>"));        
+  }
+  else
+  {
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/S4/ON' type='button'>S4 - OFF -> Ligar</button></a>"));        
+  }        
+  bfill.emit_p(PSTR("<br><br>"));
+ 
+  
+  //RGB Red
   if(ValueSaveRed == 255)
   {
-    bfill.emit_p(PSTR("On"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/R/OFF' type='button'>Desligar</button>"));
+     bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/R/OFF' type='button'>Red - ON -> Desligar</button></a>"));        
   }
   else
   {
-    bfill.emit_p(PSTR("Off"));
-    bfill.emit_p(PSTR("</td><td>"));
-    bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/R/ON' type='button'>Ligar</button>"));        
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/R/ON' type='button'>Red - OFF -> Ligar</button></a>"));            
   }        
-  bfill.emit_p(PSTR("</td></tr>"));
+  bfill.emit_p(PSTR("<br><br>"));  
+  
+    //RGB Green
+  if(ValueSaveGreen == 255)
+  {
+     bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/G/OFF' type='button'>Green - ON -> Desligar</button></a>"));        
+  }
+  else
+  {
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/G/ON' type='button'>Green - OFF -> Ligar</button></a>"));            
+  }        
+  bfill.emit_p(PSTR("<br><br>"));  
   
   
-  bfill.emit_p(PSTR("<tr><td colspan=2>Chave 1 - "));
+    //RGB Blue
+  if(ValueSaveBlue == 255)
+  {
+     bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/B/OFF' type='button'>Blue - ON -> Desligar</button></a>"));        
+  }
+  else
+  {
+    bfill.emit_p(PSTR("<a class='btn btn-danger btn-lg' href='/B/ON' type='button'>Blue - OFF -> Ligar</button></a>"));            
+  }        
+  
+  bfill.emit_p(PSTR("<br><br>"));
+  
+  bfill.emit_p(PSTR("Chave 1 - "));
   if(Chave1 == HIGH)
   {
     bfill.emit_p(PSTR("On"));    
@@ -254,10 +245,6 @@ static word homePage() {
   }
  
 
-  bfill.emit_p(PSTR("</td></tr>"));  
-    
-  bfill.emit_p(PSTR("</tbody>"));
-  bfill.emit_p(PSTR("</table>"));
   bfill.emit_p(PSTR("</div>"));
   bfill.emit_p(PSTR("</body>"));
   bfill.emit_p(PSTR("</html>"));
