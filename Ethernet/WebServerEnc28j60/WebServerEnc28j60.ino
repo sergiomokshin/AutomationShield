@@ -166,7 +166,7 @@ static word homePage() {
   bfill.emit_p(PSTR("<br><br>"));
   
    //SAIDA 4
-  if(S1 == HIGH)
+  if(S4 == HIGH)
   {
     bfill.emit_p(PSTR("<a class='btn btn-success btn-lg' href='/S4/OFF' type='button'>S4 - ON -> Desligar</button></a>"));        
   }
