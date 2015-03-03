@@ -1,7 +1,7 @@
 /*
   Software serial multple serial test
   
-  https://www.dropbox.com/s/w0e3qq30vaqgp0f/AppComando.apk?dl=0
+    https://drive.google.com/file/d/0B0t-Nu1Eo1b8OFdOWkg5QkMwMVE/view?usp=sharing
   
   VCC 3V
   GND  GND

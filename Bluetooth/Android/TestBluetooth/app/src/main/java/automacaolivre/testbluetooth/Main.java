@@ -259,7 +259,7 @@ public class Main extends ActionBarActivity {
         } else {
 
             for (BluetoothDevice bluetoothDevice : pairedDevices) {
-                if (bluetoothDevice.getName().equalsIgnoreCase("linvor")) {
+                if (bluetoothDevice.getName().equalsIgnoreCase("linvor") || bluetoothDevice.getName().equalsIgnoreCase("hc-06")) {
 
                     device = bluetoothDevice;
 
