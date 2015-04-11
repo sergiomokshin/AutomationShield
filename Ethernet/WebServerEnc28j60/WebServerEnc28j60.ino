@@ -13,9 +13,8 @@ Fev/2015
 #define PIN_RED 6  
 #define PIN_GREEN 5
 #define PIN_BLUE 3
-#define PIN_ALARM 3
-
-#define CHAVE_1 2
+#define PIN_ALARM 8
+#define CHAVE_1 8
 #define CHAVE_2 4
 #define CHAVE_3 7
 
