@@ -94,7 +94,7 @@ void setup() {
   digitalWrite(A2, EEPROM.read(MemSaida3));
   digitalWrite(A3, EEPROM.read(MemSaida4));
   ValueSaveAuto = EEPROM.read(MemAuto);
-  
+
   ValueSaida1HrI = EEPROM.read(MemSaida1HrI);
   ValueSaida1HrF = EEPROM.read(MemSaida1HrF);
   ValueSaida2HrI = EEPROM.read(MemSaida2HrI);
@@ -146,29 +146,29 @@ void WebServer() {
           }
 
           if (readString.indexOf("?DataHora") > 0) {
-            
+
             String Data = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y"));
-            String Horario = readString.substring(readString.indexOf("z") + 1, readString.lastIndexOf("z"));            
+            String Horario = readString.substring(readString.indexOf("z") + 1, readString.lastIndexOf("z"));
 
             //Serial.println(Data);
             //Serial.println(Horario);
 
             String Dia = Data.substring(0, Data.indexOf("/"));
-            String temp = Data.substring(Data.indexOf("/"));      
-            String Mes = temp.substring(1, 3);            
-            String Ano = temp.substring(temp.lastIndexOf("/") +3); //YY
-            
+            String temp = Data.substring(Data.indexOf("/"));
+            String Mes = temp.substring(1, 3);
+            String Ano = temp.substring(temp.lastIndexOf("/") + 3); //YY
+
             //Serial.println(Dia);
             //Serial.println(Mes);
-            //Serial.println(Ano);            
+            //Serial.println(Ano);
 
             String Hora = Horario.substring(0, Horario.indexOf(":"));
-            String temp2 = Horario.substring(Horario.indexOf(":"));      
-            String Minuto = temp2.substring(1, 3);                                  
+            String temp2 = Horario.substring(Horario.indexOf(":"));
+            String Minuto = temp2.substring(1, 3);
 
             //Serial.println(Hora);
             //Serial.println(Minuto);
-                        
+
             second = 0;
             minute = Minuto.toInt();
             hour = Hora.toInt();
@@ -181,38 +181,38 @@ void WebServer() {
 
 
           if (readString.indexOf("?S1L") > 0) {
-            digitalWrite(A3, HIGH);
+            digitalWrite(A0, HIGH);
             EEPROM.write(MemSaida1, 1);
           }
           if (readString.indexOf("?S1D") > 0) {
-            digitalWrite(A3, LOW);
+            digitalWrite(A0, LOW);
             EEPROM.write(MemSaida1, 0);
           }
 
           if (readString.indexOf("?S2L") > 0) {
-            digitalWrite(A2, HIGH);
+            digitalWrite(A1, HIGH);
             EEPROM.write(MemSaida2, 1);
           }
           if (readString.indexOf("?S2D") > 0) {
-            digitalWrite(A2, LOW);
+            digitalWrite(A1, LOW);
             EEPROM.write(MemSaida2, 0);
           }
 
           if (readString.indexOf("?S3L") > 0) {
-            digitalWrite(A1, HIGH);
+            digitalWrite(A2, HIGH);
             EEPROM.write(MemSaida3, 1);
           }
           if (readString.indexOf("?S3D") > 0) {
-            digitalWrite(A1, LOW);
+            digitalWrite(A2, LOW);
             EEPROM.write(MemSaida3, 0);
           }
 
           if (readString.indexOf("?S4L") > 0) {
-            digitalWrite(A0, HIGH);
+            digitalWrite(A3, HIGH);
             EEPROM.write(MemSaida4, 1);
           }
           if (readString.indexOf("?S4D") > 0) {
-            digitalWrite(A0, LOW);
+            digitalWrite(A3, LOW);
             EEPROM.write(MemSaida4, 0);
           }
 
@@ -275,7 +275,7 @@ void WebServer() {
             EEPROM.write(MemGreen, ValueGreen);
             EEPROM.write(MemBlue, ValueBlue);
           }
-          
+
           if (readString.indexOf("?AgeS3HrI") > 0) {
 
             int cmd = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y")).toInt();
@@ -316,7 +316,7 @@ void WebServer() {
             EEPROM.write(MemRGBBLUEHrF, cmd);
             ValueRGBBLUEHrF = cmd;
           }
-         
+
           SendResponse(client);
           delay(1);
           client.stop();
@@ -332,74 +332,81 @@ void WebServer() {
 
 void SendResponse(EthernetClient client) {
 
-  int S1 = digitalRead(A3);
-  int S2 = digitalRead(A2);
-  int S3 = digitalRead(A1);
-  int S4 = digitalRead(A0);
+  int S1 = digitalRead(A0);
+  int S2 = digitalRead(A1);
+  int S3 = digitalRead(A2);
+  int S4 = digitalRead(A3);
 
   int LedR = analogRead(6);
   int LedG = analogRead(5);
   int LedB = analogRead(3);
 
-  client.println(F("HTTP/1.1 200 OK")); //send new page
-  client.println(F("Content-Type: application/json"));
-  client.println();
-  client.print("dataCB");
-  client.println(F("({"));
+  client.println(F("<html><head><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'><style>th{background-color: #3E4551;color: #FFFFFF;}</style>"));
+  client.println(F("</head><body><div class='container'><div class='row'>"));
+  client.println(F("<table class='table table-bordered'><tr><th width=120px>Modo:</th><th colspan=2><label class='radio-inline'>"));
 
-  client.print("\"Auto\":\"");
-  client.print(ValueSaveAuto);
-  client.println("\"");
+  client.print(F("<input type='radio' name='rdModo' id='rdModoM' value='M' onclick='document.location.href=\"/?AUTOD\"' "));
+  if (ValueSaveAuto == 0)
+  {
+  client.print(F(" checked"));
+  }
+  client.println(F("> Manual</label>"));
 
-  client.print(",\"Day\":");
-  client.println(dayOfMonth, DEC);
-  client.print(",\"Mounth\":");
-  client.println(month, DEC);
-  client.print(",\"Year\":");
-  client.println(year, DEC);
-  client.print(",\"Hour\":");
-  client.println(hour, DEC);
-  client.print(",\"Minute\":");
-  client.println(minute, DEC);
-  client.print(",\"Second\":");
-  client.println(second, DEC);
+  client.print(F("<label class='radio-inline'><input type='radio' name='rdModo' id='rdModoA' value='A' onclick='document.location.href=\"/?AUTOL\"' "));
+  if (ValueSaveAuto == 1)
+  {
+  client.print(F(" checked"));
+  }
 
-  client.print(",\"S1\":");
-  client.println(S1);
-  client.print(",\"S2\":");
-  client.println(S2);
-  client.print(",\"S3\":");
-  client.println(S3);
-  client.print(",\"S4\":");
-  client.println(S4);
+  client.println(F(">Agendado</label></th><tr>"));
+  client.print(F("<tr><td>Horario Placa </td><td> <input type='date' id='txtdt' value='"));
+  client.print(dayOfMonth, DEC);
+  client.print(F("/"));
+  client.print(month, DEC);
+  client.print(F("/"));
+  client.print(year, DEC);
+  client.print(F("'> "));
+  client.print(F("<input type='time' id='txthr' value='"));
+  client.print(hour, DEC);
+  client.print(F(":"));
+  client.print(minute, DEC);
+  client.print(F("'> <button type='button' id='b1' class='btn btn-info' onclick=''>Alterar</button></td></table>"));
 
-  client.print(",\"AgeS3HrI\":");
-  client.println(ValueSaida3HrI);
-  client.print(",\"AgeS3HrF\":");
-  client.println(ValueSaida3HrF);
-  client.print(",\"AgeS4HrI\":");
-  client.println(ValueSaida4HrI);
-  client.print(",\"AgeS4HrF\":");
-  client.println(ValueSaida4HrF);
+  client.println(F("<table class='table table-bordered'><tr><th width=120px>Saida</th><th colspan=2>Acao</th></tr><tr><td>Saida 1</td><td width=120px>"));
+  if (S1 == 1)
+    client.print(F("<a class='btn btn-danger btn-lg' href='/?S1D' type='button'>Desligar</button>"));
+  else
+    client.print(F("<a class='btn btn-success btn-lg' href='/?S1L' type='button'>Ligar</button>"));
 
-  client.print(",\"AgeRGBWHITEHrI\":");
-  client.println(ValueRGBWHITEHrI);
-  client.print(",\"AgeRGBWHITEHrF\":");
-  client.println(ValueRGBWHITEHrF);
-  client.print(",\"AgeRGBBLUEHrI\":");
-  client.println(ValueRGBBLUEHrI);
-  client.print(",\"AgeRGBBLUEHrF\":");
-  client.println(ValueRGBBLUEHrF);
-
-  client.print(",\"Red\":");
-  client.println(ValueRed);
-  client.print(",\"Green\":");
-  client.println(ValueGreen);
-  client.print(",\"Blue\":");
-  client.println(ValueBlue);
+  client.print(F("</td><td><input type='time' id='txtS1I'> <label for = 'S1I'>&nbsp;ate&nbsp;</label><input type='time' id='txtS1F'>&nbsp;<button type='button' id='btS1A' class='btn btn-info' onclick=''>Alterar</button></td></tr>"));
+  client.print(F("</table></div></body><script></script><html>"));
 
 
-  client.println(F("})"));
+  //client.print(",\"AgeS3HrI\":");
+  //client.println(ValueSaida3HrI);
+  //client.print(",\"AgeS3HrF\":");
+  //client.println(ValueSaida3HrF);
+  //client.print(",\"AgeS4HrI\":");
+  //client.println(ValueSaida4HrI);
+  //client.print(",\"AgeS4HrF\":");
+  //client.println(ValueSaida4HrF);
+
+  //client.print(",\"AgeRGBWHITEHrI\":");
+  //client.println(ValueRGBWHITEHrI);
+  //client.print(",\"AgeRGBWHITEHrF\":");
+  //client.println(ValueRGBWHITEHrF);
+  //client.print(",\"AgeRGBBLUEHrI\":");
+  //client.println(ValueRGBBLUEHrI);
+  //client.print(",\"AgeRGBBLUEHrF\":");
+  //client.println(ValueRGBBLUEHrF);
+
+  // client.print(",\"Red\":");
+  /// client.println(ValueRed);
+  //client.print(",\"Green\":");
+  //client.println(ValueGreen);
+  //client.print(",\"Blue\":");
+  //client.println(ValueBlue);
+
   client.println();
 
 }
@@ -408,7 +415,7 @@ void ModoAuto() {
 
   //Verifica se modo Automático está ativado
   if (ValueSaveAuto == 1)
-  {        
+  {
 
     //Saida 1
     if (ValueSaida1HrI <= hour && ValueSaida1HrF >= hour)
@@ -421,7 +428,7 @@ void ModoAuto() {
       digitalWrite(A0, LOW);
       EEPROM.write(MemSaida1, 0);
     }
-    
+
     //Saida 2
     if (ValueSaida2HrI <= hour && ValueSaida2HrF >= hour)
     {
@@ -434,7 +441,7 @@ void ModoAuto() {
       EEPROM.write(MemSaida2, 0);
     }
 
-   //Saida 3
+    //Saida 3
     if (ValueSaida3HrI <= hour && ValueSaida3HrF >= hour)
     {
       digitalWrite(A2, HIGH);
