@@ -22,7 +22,7 @@
                 <tr>
                 <tr>
                     <td>Horário Placa </td>
-                    <td> <input type='date' id='txtdt'> <input type='time' id='txthr'> <button type='button' id='b1' class='btn btn-info' onclick=''>Alterar</button></td>                    
+                    <td> <input type='date' id='txtdt'> <input type='time' id='txthr'> <button type='button' id='b1' class='btn btn-info' onclick='javascript:AlteraHr()'>Alterar</button></td>                    
                 </tr>               
 			</table>	
             <table class='table table-bordered'>
@@ -37,13 +37,13 @@
 					</td>	
 					<td>
 						<input type='time' id='txtS1I'> <label for = "S1I"> até </label><input type='time' id='txtS1F'>
-						<button type='button' id='btS1A' class='btn btn-info' onclick=''>Alterar</button>						                    
+						<button type='button' id='btS1A' class='btn btn-info' onclick="javascript:AlteraAg('S1')" >Alterar</button>						                    
                     </td>
                 </tr>
                 <tr>
                       <td>Saida 2</td>
                     <td>
-						<button type='button' id='S2' class='btn btn-success' onclick=''>Desligar</button>
+						<button type='button' id='S2' class='btn btn-success' onclick="javascript:AlteraAg('S2')">Desligar</button>
 					</td>	
 					<td>												
                     </td>
@@ -83,6 +83,21 @@
 </body>
 <script>
 
+function AlteraHr() {
+
+    var da = document.getElementById("txtdt").value;
+    var hr = document.getElementById("txthr").value;
+    var cmd = "/?DataHora" + "y" + da + "yz" + hr + "z";
+    location.href = cmd;   
+}
+
+function AlteraAg(saida) {
+
+	var hrI = document.getElementById("txt" + saida + "I").value;
+	var hrF = document.getElementById("txt" + saida + "F").value;
+		
+	var cmd = "?/Age" + saida + "HrI" + "y" + hrI + "yz" + hrF + "z";
+	location.href = cmd; 		
+}
 </script>
 <html>
-
