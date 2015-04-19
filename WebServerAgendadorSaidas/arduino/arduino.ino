@@ -29,21 +29,21 @@ int MemAuto   = 5; //Endereço de memoria com conteudo ultimo comando enviado mo
 
 int MemSaida1HrI = 6; //Endereço de memoria com conteudo inicio horario Saida 3
 int MemSaida1HrF = 7; //Endereço de memoria com conteudo fim horario Saida 3
-int MemSaida2HrI = 6; //Endereço de memoria com conteudo inicio horario Saida 3
-int MemSaida2HrF = 7; //Endereço de memoria com conteudo fim horario Saida 3
-int MemSaida3HrI = 6; //Endereço de memoria com conteudo inicio horario Saida 3
-int MemSaida3HrF = 7; //Endereço de memoria com conteudo fim horario Saida 3
-int MemSaida4HrI = 8; //Endereço de memoria com conteudo inicio horario Saida 4
-int MemSaida4HrF = 9; //Endereço de memoria com conteudo fim horario Saida 4
+int MemSaida2HrI = 8; //Endereço de memoria com conteudo inicio horario Saida 3
+int MemSaida2HrF = 9; //Endereço de memoria com conteudo fim horario Saida 3
+int MemSaida3HrI = 10; //Endereço de memoria com conteudo inicio horario Saida 3
+int MemSaida3HrF = 11; //Endereço de memoria com conteudo fim horario Saida 3
+int MemSaida4HrI = 12; //Endereço de memoria com conteudo inicio horario Saida 4
+int MemSaida4HrF = 13; //Endereço de memoria com conteudo fim horario Saida 4
 
-int MemRGBWHITEHrI = 10; //Endereço de memoria com conteudo inicio horario RGB com cor Branca
-int MemRGBWHITEHrF = 11; //Endereço de memoria com conteudo fim horario RGB com cor Branca
-int MemRGBBLUEHrI = 12; //Endereço de memoria com conteudo inicio horario RGB com cor Azul
-int MemRGBBLUEHrF = 13; //Endereço de memoria com conteudo fim horario RGB com cor Azul
+int MemRGBWHITEHrI = 14; //Endereço de memoria com conteudo inicio horario RGB com cor Branca
+int MemRGBWHITEHrF = 15; //Endereço de memoria com conteudo fim horario RGB com cor Branca
+int MemRGBBLUEHrI = 16; //Endereço de memoria com conteudo inicio horario RGB com cor Azul
+int MemRGBBLUEHrF = 17; //Endereço de memoria com conteudo fim horario RGB com cor Azul
 
-int MemRed = 17; //Endereço de memoria com ultimo comando enviado Red
-int MemGreen = 18; //Endereço de memoria com ultimo comando enviado Green
-int MemBlue = 19; //Endereço de memoria com ultimo comando enviado Blue
+int MemRed = 18; //Endereço de memoria com ultimo comando enviado Red
+int MemGreen = 19; //Endereço de memoria com ultimo comando enviado Green
+int MemBlue = 20; //Endereço de memoria com ultimo comando enviado Blue
 
 
 int ValueSaveSaida1 = 0; //Conteudo da memoria com status Saida 1
@@ -150,17 +150,14 @@ void WebServer() {
             String Data = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y"));
             String Horario = readString.substring(readString.indexOf("z") + 1, readString.lastIndexOf("z"));
 
-            //Serial.println(Data);
-            //Serial.println(Horario);
+            //  Serial.println(Data);
+            //  Serial.println(Horario);
 
+            //Data no formato dd/mm/yyyy
             String Dia = Data.substring(0, Data.indexOf("/"));
             String temp = Data.substring(Data.indexOf("/"));
             String Mes = temp.substring(1, 3);
-            String Ano = temp.substring(temp.lastIndexOf("/") + 3); //YY
-
-            //Serial.println(Dia);
-            //Serial.println(Mes);
-            //Serial.println(Ano);
+            String Ano = temp.substring(temp.lastIndexOf("/") + 3);
 
             String Hora = Horario.substring(0, Horario.indexOf(":"));
             String temp2 = Horario.substring(Horario.indexOf(":"));
@@ -169,6 +166,11 @@ void WebServer() {
             //Serial.println(Hora);
             //Serial.println(Minuto);
 
+            Serial.println(Dia);
+            Serial.println(Mes);
+            Serial.println(Ano);
+
+
             second = 0;
             minute = Minuto.toInt();
             hour = Hora.toInt();
@@ -176,6 +178,11 @@ void WebServer() {
             dayOfMonth = Dia.toInt();
             month = Mes.toInt();
             year = Ano.toInt();
+
+            Serial.println(dayOfMonth);
+            Serial.println(month);
+            Serial.println(year);
+
             setDateDs1307(second, minute, hour, dayOfWeek, dayOfMonth, month, year);
           }
 
@@ -276,6 +283,31 @@ void WebServer() {
             EEPROM.write(MemBlue, ValueBlue);
           }
 
+          if (readString.indexOf("?AgeS1HrI") > 0) {
+
+            int cmd = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y")).toInt();
+            EEPROM.write(MemSaida1HrI, cmd);
+            ValueSaida1HrI = cmd;
+
+            cmd = readString.substring(readString.indexOf("z") + 1, readString.lastIndexOf("z")).toInt();
+            EEPROM.write(MemSaida1HrF, cmd);
+            ValueSaida1HrF = cmd;
+
+            Serial.println(ValueSaida1HrI);
+            Serial.println(ValueSaida1HrF);
+
+          }
+
+          if (readString.indexOf("?AgeS2HrI") > 0) {
+
+            int cmd = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y")).toInt();
+            EEPROM.write(MemSaida2HrI, cmd);
+            ValueSaida2HrI = cmd;
+            cmd = readString.substring(readString.indexOf("z") + 1, readString.lastIndexOf("z")).toInt();
+            EEPROM.write(MemSaida2HrF, cmd);
+            ValueSaida2HrF = cmd;
+          }
+
           if (readString.indexOf("?AgeS3HrI") > 0) {
 
             int cmd = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y")).toInt();
@@ -341,45 +373,129 @@ void SendResponse(EthernetClient client) {
   int LedG = analogRead(5);
   int LedB = analogRead(3);
 
+  String bloqueiaAcao = "";
   client.println(F("<html><head><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'><style>th{background-color: #3E4551;color: #FFFFFF;}</style>"));
   client.println(F("</head><body><div class='container'><div class='row'>"));
-  client.println(F("<table class='table table-bordered'><tr><th width=120px>Modo:</th><th colspan=2><label class='radio-inline'>"));
+  client.println(F("<table class='table table-bordered'><tr><th width=140px>Modo:</th><th colspan=2><label class='radio-inline'>"));
 
   client.print(F("<input type='radio' name='rdModo' id='rdModoM' value='M' onclick='document.location.href=\"/?AUTOD\"' "));
   if (ValueSaveAuto == 0)
   {
-  client.print(F(" checked"));
+    client.print(F(" checked"));
   }
   client.println(F("> Manual</label>"));
 
   client.print(F("<label class='radio-inline'><input type='radio' name='rdModo' id='rdModoA' value='A' onclick='document.location.href=\"/?AUTOL\"' "));
   if (ValueSaveAuto == 1)
   {
-  client.print(F(" checked"));
+    client.print(F(" checked"));
+    bloqueiaAcao = " disabled ";
   }
 
   client.println(F(">Agendado</label></th><tr>"));
-  client.print(F("<tr><td>Horario Placa </td><td> <input type='date' id='txtdt' value='"));
+  client.print(F("<tr><td>Horario Placa </td><td> <input type='text' style='width:140px;' id='txtdt' value='"));
   client.print(dayOfMonth, DEC);
   client.print(F("/"));
   client.print(month, DEC);
   client.print(F("/"));
   client.print(year, DEC);
   client.print(F("'> "));
-  client.print(F("<input type='time' id='txthr' value='"));
+  client.print(F("<input type='text' style='width:60px;' id='txthr' value='"));
   client.print(hour, DEC);
   client.print(F(":"));
   client.print(minute, DEC);
-  client.print(F("'> <button type='button' id='b1' class='btn btn-info' onclick=''>Alterar</button></td></table>"));
+  client.print(F("'> <button type='button' id='b1' class='btn btn-info' onclick='javascript:AlteraHr();'>Alterar</button></td></table>"));
+  client.println(F("<table class='table table-bordered'><tr><th width=140px>Saida</th><th colspan=2>Acao</th></tr>"));
 
-  client.println(F("<table class='table table-bordered'><tr><th width=120px>Saida</th><th colspan=2>Acao</th></tr><tr><td>Saida 1</td><td width=120px>"));
+  //Inicio S1
   if (S1 == 1)
-    client.print(F("<a class='btn btn-danger btn-lg' href='/?S1D' type='button'>Desligar</button>"));
+  {
+    client.println(F("<tr><td>Saida 1 - Ligada</td><td>"));
+    client.println("<a class='btn btn-danger btn-lg' href='/?S1D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+  }
   else
-    client.print(F("<a class='btn btn-success btn-lg' href='/?S1L' type='button'>Ligar</button>"));
+  {
+    client.println(F("<tr><td>Saida 1 - Desligada</td><td>"));
+    client.println("<a class='btn btn-success btn-lg' href='/?S1L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+  }
 
-  client.print(F("</td><td><input type='time' id='txtS1I'> <label for = 'S1I'>&nbsp;ate&nbsp;</label><input type='time' id='txtS1F'>&nbsp;<button type='button' id='btS1A' class='btn btn-info' onclick=''>Alterar</button></td></tr>"));
-  client.print(F("</table></div></body><script></script><html>"));
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS1I' min='1' max='23' value='"));
+  client.print(ValueSaida1HrI, DEC);
+  client.print(F("'><label for = 'S1I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS1F' min='1' max='23' value='"));
+  client.print(ValueSaida1HrF, DEC);
+  client.print(F("'><label for = 'S1I'>:59</label>&nbsp;<button type='button' id='btS1A' class='btn btn-info' onclick='javascript:AlteraAg(\"S1\")'>Alterar</button></td></tr>"));
+  //FIM S1
+
+  //Inicio S2
+  if (S2 == 1)
+  {
+    client.println(F("<tr><td>Saida 2 - Ligada</td><td>"));
+    client.println("<a class='btn btn-danger btn-lg' href='/?S2D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+  }
+  else
+  {
+    client.println(F("<tr><td>Saida 2 - Desligada</td><td>"));
+    client.println("<a class='btn btn-success btn-lg' href='/?S2L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+  }
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS2I' min='2' max='23' value='"));
+  client.print(ValueSaida2HrI, DEC);
+  client.print(F("'><label for = 'S2I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS2F' min='2' max='23' value='"));
+  client.print(ValueSaida2HrF, DEC);
+  client.print(F("'><label for = 'S2I'>:59</label>&nbsp;<button type='button' id='btS2A' class='btn btn-info' onclick='javascript:AlteraAg(\"S2\")'>Alterar</button></td></tr>"));
+  //FIM S2
+
+  //Inicio S3
+  if (S3 == 1)
+  {
+    client.println(F("<tr><td>Saida 3 - Ligada</td><td>"));
+    client.println("<a class='btn btn-danger btn-lg' href='/?S3D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+  }
+  else
+  {
+    client.println(F("<tr><td>Saida 3 - Desligada</td><td>"));
+    client.println("<a class='btn btn-success btn-lg' href='/?S3L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+  }
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS3I' min='3' max='33' value='"));
+  client.print(ValueSaida3HrI, DEC);
+  client.print(F("'><label for = 'S3I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS3F' min='3' max='33' value='"));
+  client.print(ValueSaida3HrF, DEC);
+  client.print(F("'><label for = 'S3I'>:59</label>&nbsp;<button type='button' id='btS3A' class='btn btn-info' onclick='javascript:AlteraAg(\"S3\")'>Alterar</button></td></tr>"));
+  //FIM S3
+
+  //Inicio S4
+  if (S4 == 1)
+  {
+    client.println(F("<tr><td>Saida 4 - Ligada</td><td>"));
+    client.println("<a class='btn btn-danger btn-lg' href='/?S4D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+  }
+  else
+  {
+    client.println(F("<tr><td>Saida 4 - Desligada</td><td>"));
+    client.println("<a class='btn btn-success btn-lg' href='/?S4L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+  }
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS4I' min='4' max='44' value='"));
+  client.print(ValueSaida4HrI, DEC);
+  client.print(F("'><label for = 'S4I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS4F' min='4' max='44' value='"));
+  client.print(ValueSaida4HrF, DEC);
+  client.print(F("'><label for = 'S4I'>:59</label>&nbsp;<button type='button' id='btS4A' class='btn btn-info' onclick='javascript:AlteraAg(\"S4\")'>Alterar</button></td></tr>"));
+  //FIM S4
+
+  client.println(F("</table><script>"));
+
+  client.println(F("function AlteraHr() {"));
+  client.println(F("var da = document.getElementById(\"txtdt\").value;"));
+  client.println(F("var hr = document.getElementById(\"txthr\").value;"));
+  client.println(F("var cmd = \"/?DataHora\" + \"y\" + da + \"yz\" + hr + \"z\";"));
+  client.println(F("location.href = cmd;}"));
+  client.println(F("function AlteraAg(saida) {"));
+  client.println(F("var hrI = document.getElementById(\"txt\" + saida + \"I\").value;"));
+  client.println(F("var hrF = document.getElementById(\"txt\" + saida + \"F\").value;"));
+  client.println(F("var cmd = \"/?Age\" + saida + \"HrI\" + \"y\" + hrI + \"yz\" + hrF + \"z\";"));
+  client.println(F("location.href = cmd;}"));
+  client.println(F("</script><html>"));
 
 
   //client.print(",\"AgeS3HrI\":");
@@ -535,6 +651,7 @@ void getDateDs1307(byte * second,
   *dayOfMonth = bcdToDec(Wire.read());
   *month      = bcdToDec(Wire.read());
   *year       = bcdToDec(Wire.read());
+
 }
 
 byte decToBcd(byte val)
@@ -567,5 +684,6 @@ void setDateDs1307(byte second,        // 0-59
   Wire.write(decToBcd(year));
   Wire.endTransmission();
 }
+
 
 
