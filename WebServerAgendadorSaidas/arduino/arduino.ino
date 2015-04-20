@@ -36,15 +36,14 @@ int MemSaida3HrF = 11; //Endereço de memoria com conteudo fim horario Saida 3
 int MemSaida4HrI = 12; //Endereço de memoria com conteudo inicio horario Saida 4
 int MemSaida4HrF = 13; //Endereço de memoria com conteudo fim horario Saida 4
 
-int MemRGBWHITEHrI = 14; //Endereço de memoria com conteudo inicio horario RGB com cor Branca
-int MemRGBWHITEHrF = 15; //Endereço de memoria com conteudo fim horario RGB com cor Branca
-int MemRGBBLUEHrI = 16; //Endereço de memoria com conteudo inicio horario RGB com cor Azul
+int MemRGBHrI = 14; //Endereço de memoria com conteudo inicio horario RGB
+int MemRGBHrF = 15; //Endereço de memoria com conteudo fim horario RGB
+int MemRGBType = 16; //Endereço de memoria com conteudo inicio horario RGB com cor Azul
 int MemRGBBLUEHrF = 17; //Endereço de memoria com conteudo fim horario RGB com cor Azul
 
 int MemRed = 18; //Endereço de memoria com ultimo comando enviado Red
 int MemGreen = 19; //Endereço de memoria com ultimo comando enviado Green
 int MemBlue = 20; //Endereço de memoria com ultimo comando enviado Blue
-
 
 int ValueSaveSaida1 = 0; //Conteudo da memoria com status Saida 1
 int ValueSaveSaida2 = 0; //Conteudo da memoria com status Saida 2
@@ -60,10 +59,9 @@ int ValueSaida3HrI = 0; //Conteudo da memoria com inicio horario Saida 3
 int ValueSaida3HrF = 0; //Conteudo da memoria fim horario Saida 3
 int ValueSaida4HrI = 0; //Conteudo da memoria inicio horario Saida 4
 int ValueSaida4HrF = 0; //Conteudo da memoria fim horario Saida 4
-int ValueRGBWHITEHrI = 0; //Conteudo de memoria inicio horario RGB com cor Branca
-int ValueRGBWHITEHrF = 0; //Conteudo de memoria fim horario RGB com cor Branca
-int ValueRGBBLUEHrI = 0; //Conteudo de memoria inicio horario RGB com cor Azul
-int ValueRGBBLUEHrF = 0; //Conteudo de memoria  fim horario RGB com cor Azul
+int ValueRGBHrI = 0; //Conteudo de memoria inicio horario RGB
+int ValueRGBHrF = 0; //Conteudo de memoria fim horario RGB
+int ValueRGBType = 0; //Conteudo de memoria com cor RGB para agendamento
 int ValueRed = 0; //Conteudo de memoria  Red
 int ValueGreen = 0; //Conteudo de memoria  Green
 int ValueBlue = 0; //Conteudo de memoria  Blue
@@ -76,7 +74,6 @@ byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
 void setup() {
 
   wdt_enable(WDTO_8S); //Habilita Watchdog em 8 Segundos
-
   Wire.begin();
 
   Ethernet.begin(mac, ip, gateway, subnet);
@@ -103,13 +100,16 @@ void setup() {
   ValueSaida3HrF = EEPROM.read(MemSaida3HrF);
   ValueSaida4HrI = EEPROM.read(MemSaida4HrI);
   ValueSaida4HrF = EEPROM.read(MemSaida4HrF);
-  ValueRGBWHITEHrI = EEPROM.read(MemRGBWHITEHrI);
-  ValueRGBWHITEHrF = EEPROM.read(MemRGBWHITEHrF);
-  ValueRGBBLUEHrI = EEPROM.read(MemRGBBLUEHrI);
-  ValueRGBBLUEHrF = EEPROM.read(MemRGBBLUEHrF);
+  ValueRGBHrI = EEPROM.read(MemRGBHrI);
+  ValueRGBHrF = EEPROM.read(MemRGBHrF);
+  ValueRGBType = EEPROM.read(MemRGBType);
   ValueRed = EEPROM.read(MemRed);
   ValueGreen = EEPROM.read(MemGreen);
   ValueBlue = EEPROM.read(MemBlue);
+
+  analogWrite(PIN_RED, ValueRed);
+  analogWrite(PIN_GREEN, ValueGreen);
+  analogWrite(PIN_BLUE, ValueBlue);
 }
 
 void loop() {
@@ -227,21 +227,27 @@ void WebServer() {
             ValueRed = 255;
             ValueGreen = 0;
             ValueBlue = 0;
-            analogWrite(PIN_RED, ValueRed);
-            analogWrite(PIN_GREEN, ValueGreen);
-            analogWrite(PIN_BLUE, ValueBlue);
+            if (ValueSaveAuto == 0)
+            {
+              analogWrite(PIN_RED, ValueRed);
+              analogWrite(PIN_GREEN, ValueGreen);
+              analogWrite(PIN_BLUE, ValueBlue);
+            }
             EEPROM.write(MemRed, ValueRed);
             EEPROM.write(MemGreen, ValueGreen);
             EEPROM.write(MemBlue, ValueBlue);
           }
 
-          if (readString.indexOf("GRE") > 0) {
+          if (readString.indexOf("?GRE") > 0) {
             ValueRed = 0;
             ValueGreen = 255;
             ValueBlue = 0;
-            analogWrite(PIN_RED, ValueRed);
-            analogWrite(PIN_GREEN, ValueGreen);
-            analogWrite(PIN_BLUE, ValueBlue);
+            if (ValueSaveAuto == 0)
+            {
+              analogWrite(PIN_RED, ValueRed);
+              analogWrite(PIN_GREEN, ValueGreen);
+              analogWrite(PIN_BLUE, ValueBlue);
+            }
             EEPROM.write(MemRed, ValueRed);
             EEPROM.write(MemGreen, ValueGreen);
             EEPROM.write(MemBlue, ValueBlue);
@@ -251,9 +257,12 @@ void WebServer() {
             ValueRed = 0;
             ValueGreen = 0;
             ValueBlue = 255;
-            analogWrite(PIN_RED, ValueRed);
-            analogWrite(PIN_GREEN, ValueGreen);
-            analogWrite(PIN_BLUE, ValueBlue);
+            if (ValueSaveAuto == 0)
+            {
+              analogWrite(PIN_RED, ValueRed);
+              analogWrite(PIN_GREEN, ValueGreen);
+              analogWrite(PIN_BLUE, ValueBlue);
+            }
             EEPROM.write(MemRed, ValueRed);
             EEPROM.write(MemGreen, ValueGreen);
             EEPROM.write(MemBlue, ValueBlue);
@@ -263,9 +272,12 @@ void WebServer() {
             ValueRed = 255;
             ValueGreen = 255;
             ValueBlue = 255;
-            analogWrite(PIN_RED, ValueRed);
-            analogWrite(PIN_GREEN, ValueGreen);
-            analogWrite(PIN_BLUE, ValueBlue);
+            if (ValueSaveAuto == 0)
+            {
+              analogWrite(PIN_RED, ValueRed);
+              analogWrite(PIN_GREEN, ValueGreen);
+              analogWrite(PIN_BLUE, ValueBlue);
+            }
             EEPROM.write(MemRed, ValueRed);
             EEPROM.write(MemGreen, ValueGreen);
             EEPROM.write(MemBlue, ValueBlue);
@@ -329,24 +341,14 @@ void WebServer() {
           }
 
 
-          if (readString.indexOf("?AgeRGBWHITEHrI") > 0) {
+          if (readString.indexOf("?AgeRGBHrI") > 0) {
             int cmd = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y")).toInt();
-            EEPROM.write(MemRGBWHITEHrI, cmd);
-            ValueRGBWHITEHrI = cmd;
+            EEPROM.write(MemRGBHrI, cmd);
+            ValueRGBHrI = cmd;
 
             cmd = readString.substring(readString.indexOf("z") + 1, readString.lastIndexOf("z")).toInt();
-            EEPROM.write(MemRGBWHITEHrF, cmd);
-            ValueRGBWHITEHrF = cmd;
-          }
-
-          if (readString.indexOf("?AgeRGBBLUEHrI") > 0) {
-            int cmd = readString.substring(readString.indexOf("y") + 1, readString.lastIndexOf("y")).toInt();
-            EEPROM.write(MemRGBBLUEHrI, cmd);
-            ValueRGBBLUEHrI = cmd;
-
-            cmd = readString.substring(readString.indexOf("z") + 1, readString.lastIndexOf("z")).toInt();
-            EEPROM.write(MemRGBBLUEHrF, cmd);
-            ValueRGBBLUEHrF = cmd;
+            EEPROM.write(MemRGBHrF, cmd);
+            ValueRGBHrF = cmd;
           }
 
           SendResponse(client);
@@ -363,6 +365,9 @@ void WebServer() {
 
 
 void SendResponse(EthernetClient client) {
+
+
+  ModoAuto(); // Atualizar variaveis
 
   int S1 = digitalRead(A0);
   int S2 = digitalRead(A1);
@@ -394,29 +399,47 @@ void SendResponse(EthernetClient client) {
 
   client.println(F(">Agendado</label></th><tr>"));
   client.print(F("<tr><td>Horario Placa </td><td> <input type='text' style='width:140px;' id='txtdt' value='"));
+  if (dayOfMonth < 10)
+    client.print(F("0"));
+
   client.print(dayOfMonth, DEC);
   client.print(F("/"));
+  if (month < 10)
+    client.print(F("0"));
+
   client.print(month, DEC);
-  client.print(F("/"));
+  client.print(F("/20"));
+  if (year < 10)
+    client.print(F("0"));
   client.print(year, DEC);
   client.print(F("'> "));
   client.print(F("<input type='text' style='width:60px;' id='txthr' value='"));
+  if (hour < 10)
+    client.print(F("0"));
+
   client.print(hour, DEC);
   client.print(F(":"));
+  if (minute < 10)
+    client.print(F("0"));
   client.print(minute, DEC);
-  client.print(F("'> <button type='button' id='b1' class='btn btn-info' onclick='javascript:AlteraHr();'>Alterar</button></td></table>"));
-  client.println(F("<table class='table table-bordered'><tr><th width=140px>Saida</th><th colspan=2>Acao</th></tr>"));
+  client.print(F("'> <button type='button' id='b1' class='btn btn-info' onclick='javascript:AlteraHr();'>Alterar</button></td>"));
+  client.println(F("<tr><th width=140px>Saida</th><th colspan=2>Acao</th></tr>"));
 
   //Inicio S1
   if (S1 == 1)
   {
     client.println(F("<tr><td>Saida 1 - Ligada</td><td>"));
-    client.println("<a class='btn btn-danger btn-lg' href='/?S1D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+    client.println(F("<a class='btn btn-danger' href='/?S1D' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Desligar</button>"));
   }
   else
   {
     client.println(F("<tr><td>Saida 1 - Desligada</td><td>"));
-    client.println("<a class='btn btn-success btn-lg' href='/?S1L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+    client.println(F("<a class='btn btn-success' href='/?S1L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
+
   }
 
   client.print(F("</td><td><input type='number' style='width:40px;' id='txtS1I' min='1' max='23' value='"));
@@ -430,12 +453,17 @@ void SendResponse(EthernetClient client) {
   if (S2 == 1)
   {
     client.println(F("<tr><td>Saida 2 - Ligada</td><td>"));
-    client.println("<a class='btn btn-danger btn-lg' href='/?S2D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+    client.println(F("<a class='btn btn-danger' href='/?S2D' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Desligar</button>"));
   }
   else
   {
     client.println(F("<tr><td>Saida 2 - Desligada</td><td>"));
-    client.println("<a class='btn btn-success btn-lg' href='/?S2L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+    client.println(F("<a class='btn btn-success' href='/?S2L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
+
   }
 
   client.print(F("</td><td><input type='number' style='width:40px;' id='txtS2I' min='2' max='23' value='"));
@@ -449,12 +477,17 @@ void SendResponse(EthernetClient client) {
   if (S3 == 1)
   {
     client.println(F("<tr><td>Saida 3 - Ligada</td><td>"));
-    client.println("<a class='btn btn-danger btn-lg' href='/?S3D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+    client.println(F("<a class='btn btn-danger' href='/?S3D' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Desligar</button>"));
   }
   else
   {
     client.println(F("<tr><td>Saida 3 - Desligada</td><td>"));
-    client.println("<a class='btn btn-success btn-lg' href='/?S3L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+    client.println(F("<a class='btn btn-success' href='/?S3L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
+
   }
 
   client.print(F("</td><td><input type='number' style='width:40px;' id='txtS3I' min='3' max='33' value='"));
@@ -468,23 +501,86 @@ void SendResponse(EthernetClient client) {
   if (S4 == 1)
   {
     client.println(F("<tr><td>Saida 4 - Ligada</td><td>"));
-    client.println("<a class='btn btn-danger btn-lg' href='/?S4D' type='button' " + bloqueiaAcao + ">Desligar</button>");
+    client.println(F("<a class='btn btn-danger' href='/?S4D' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Desligar</button>"));
   }
   else
   {
     client.println(F("<tr><td>Saida 4 - Desligada</td><td>"));
-    client.println("<a class='btn btn-success btn-lg' href='/?S4L' type='button' " + bloqueiaAcao + ">Ligar</button>");
+    client.println(F("<a class='btn btn-success' href='/?S4L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
+
   }
 
-  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS4I' min='4' max='44' value='"));
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS4I' min='1' max='23' value='"));
   client.print(ValueSaida4HrI, DEC);
-  client.print(F("'><label for = 'S4I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS4F' min='4' max='44' value='"));
+  client.print(F("'><label for = 'S4I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS4F' min='1' max='23' value='"));
   client.print(ValueSaida4HrF, DEC);
   client.print(F("'><label for = 'S4I'>:59</label>&nbsp;<button type='button' id='btS4A' class='btn btn-info' onclick='javascript:AlteraAg(\"S4\")'>Alterar</button></td></tr>"));
   //FIM S4
 
-  client.println(F("</table><script>"));
+  //Inicio RGB
+  client.println(F("<tr><td>RGB - Ligado</td><td>"));
 
+  //Inicio RED
+  client.print(F("<a class='btn btn"));
+  if (ValueRed > 0 && ValueBlue == 0 && ValueGreen == 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?RED' type='button' >Red</button>"));
+  //FIM RED
+
+  //Inicio Green
+  client.print(F("<a class='btn btn"));
+  if (ValueRed == 0 && ValueBlue == 0 && ValueGreen > 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?GREEN' type='button' >Green</button>"));
+  //FIM Green
+
+  //Inicio Blue
+  client.print(F("<a class='btn btn"));
+  if (ValueRed == 0 && ValueBlue > 0 && ValueGreen == 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?BLUE' type='button' >Blue</button>"));
+  //FIM Blue
+
+  //Inicio White
+  client.print(F("<a class='btn btn"));
+  if (ValueRed > 0 && ValueBlue > 0 && ValueGreen > 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?WHITE' type='button' >White</button>"));
+  //FIM Blue
+
+  //Inicio OFF
+  client.print(F("<a class='btn btn"));
+  if (ValueRed == 0 && ValueBlue == 0 && ValueGreen == 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+
+  client.print(bloqueiaAcao);
+  client.print(F(" href='/?RGBOFF' type='button' >Desligar</button>"));
+  //FIM Blue
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtRGBI' min='4' max='44' value='"));
+  client.print(ValueRGBHrI, DEC);
+  client.print(F("'><label for = 'RGBI'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtRGBF' min='4' max='44' value='"));
+  client.print(ValueRGBHrF, DEC);
+  client.print(F("'><label for = 'RGBI'>:59</label>&nbsp;<button type='button' id='btRGBA' class='btn btn-info' onclick='javascript:AlteraAg(\"RGB\")'>Alterar</button>"));
+  client.print(F("</td></tr>"));
+  //FIM RGB
+
+
+  client.println(F("</table><script>"));
   client.println(F("function AlteraHr() {"));
   client.println(F("var da = document.getElementById(\"txtdt\").value;"));
   client.println(F("var hr = document.getElementById(\"txthr\").value;"));
@@ -497,32 +593,6 @@ void SendResponse(EthernetClient client) {
   client.println(F("location.href = cmd;}"));
   client.println(F("</script><html>"));
 
-
-  //client.print(",\"AgeS3HrI\":");
-  //client.println(ValueSaida3HrI);
-  //client.print(",\"AgeS3HrF\":");
-  //client.println(ValueSaida3HrF);
-  //client.print(",\"AgeS4HrI\":");
-  //client.println(ValueSaida4HrI);
-  //client.print(",\"AgeS4HrF\":");
-  //client.println(ValueSaida4HrF);
-
-  //client.print(",\"AgeRGBWHITEHrI\":");
-  //client.println(ValueRGBWHITEHrI);
-  //client.print(",\"AgeRGBWHITEHrF\":");
-  //client.println(ValueRGBWHITEHrF);
-  //client.print(",\"AgeRGBBLUEHrI\":");
-  //client.println(ValueRGBBLUEHrI);
-  //client.print(",\"AgeRGBBLUEHrF\":");
-  //client.println(ValueRGBBLUEHrF);
-
-  // client.print(",\"Red\":");
-  /// client.println(ValueRed);
-  //client.print(",\"Green\":");
-  //client.println(ValueGreen);
-  //client.print(",\"Blue\":");
-  //client.println(ValueBlue);
-
   client.println();
 
 }
@@ -532,7 +602,6 @@ void ModoAuto() {
   //Verifica se modo Automático está ativado
   if (ValueSaveAuto == 1)
   {
-
     //Saida 1
     if (ValueSaida1HrI <= hour && ValueSaida1HrF >= hour)
     {
@@ -582,50 +651,17 @@ void ModoAuto() {
     }
 
     //RGB
-    if (ValueRGBWHITEHrI <= hour && ValueRGBWHITEHrF >= hour)
+    if (ValueRGBHrI <= hour && ValueRGBHrF >= hour)
     {
-      ValueRed = 255;
-      ValueGreen = 255;
-      ValueBlue = 255;
       analogWrite(PIN_RED, ValueRed);
       analogWrite(PIN_GREEN, ValueGreen);
       analogWrite(PIN_BLUE, ValueBlue);
-      EEPROM.write(MemRed, ValueRed);
-      EEPROM.write(MemGreen, ValueGreen);
-      EEPROM.write(MemBlue, ValueBlue);
-    }
-    else if (ValueRGBBLUEHrI <= hour && ValueRGBBLUEHrF >= hour)
-    {
-      ValueRed = 0;
-      ValueGreen = 0;
-      if (ValueRGBBLUEHrF == hour) // Mais escuro na ultima hora do agendamento azul
-      {
-        ValueBlue = 80;
-      }
-      else
-      {
-        ValueBlue = 255;
-      }
-
-      analogWrite(PIN_RED, ValueRed);
-      analogWrite(PIN_GREEN, ValueGreen);
-      analogWrite(PIN_BLUE, ValueBlue);
-      EEPROM.write(MemRed, ValueRed);
-      EEPROM.write(MemGreen, ValueGreen);
-      EEPROM.write(MemBlue, ValueBlue);
-
     }
     else
     {
-      ValueRed = 0;
-      ValueGreen = 0;
-      ValueBlue = 0;
-      analogWrite(PIN_RED, ValueRed);
-      analogWrite(PIN_GREEN, ValueGreen);
-      analogWrite(PIN_BLUE, ValueBlue);
-      EEPROM.write(MemRed, ValueRed);
-      EEPROM.write(MemGreen, ValueGreen);
-      EEPROM.write(MemBlue, ValueBlue);
+      analogWrite(PIN_RED, 0);
+      analogWrite(PIN_GREEN, 0);
+      analogWrite(PIN_BLUE, 0);
     }
   }
 }
@@ -684,6 +720,7 @@ void setDateDs1307(byte second,        // 0-59
   Wire.write(decToBcd(year));
   Wire.endTransmission();
 }
+
 
 
 
