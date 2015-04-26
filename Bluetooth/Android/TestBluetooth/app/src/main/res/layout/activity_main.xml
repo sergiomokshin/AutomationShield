@@ -61,7 +61,12 @@
             android:max="9"
             android:id="@+id/seekB" />
 
-
+        <TextView
+            android:text="Mensagens"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/txtMsg" />
 
 
     </LinearLayout>
