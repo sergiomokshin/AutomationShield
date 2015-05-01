@@ -22,7 +22,7 @@
 
 
 #include <EEPROM.h>
-#include <avr/wdt.h>
+//#include <avr/wdt.h>
 
 #define PIN_RED 6
 #define PIN_GREEN 5
@@ -63,8 +63,8 @@ void setup()
 
   ValueSaveSaida1 = EEPROM.read(MemSaveSaida1);
   ValueSaveSaida2 = EEPROM.read(MemSaveSaida2);
-  ValueSaveSaida3 = EEPROM.read(MemSaveSaida3);
-  ValueSaveSaida4 = EEPROM.read(MemSaveSaida4);
+  ValueSaveSaida3 = 0;// EEPROM.read(MemSaveSaida3);
+  ValueSaveSaida4 = 0;//EEPROM.read(MemSaveSaida4);
   ValueSaveRed = EEPROM.read(MemSaveRed);
   ValueSaveBlue = EEPROM.read(MemSaveBlue);
   ValueSaveGreen = EEPROM.read(MemSaveGreen);
@@ -78,13 +78,13 @@ void setup()
   analogWrite(6, ValueSaveGreen);
   analogWrite(3, ValueSaveBlue);
 
-  wdt_enable(WDTO_8S); //Watchdog 8 Segundos
+  //wdt_enable(WDTO_8S); //Watchdog 8 Segundos
 }
 
 void loop()
 {
   aguardacomandos();
-  wdt_reset(); //Reset WatchDog
+//  wdt_reset(); //Reset WatchDog
   RetornaComandos();
 
 }
@@ -125,9 +125,64 @@ void disparacomando()
 
     if (port == 1)
     {
-      ValueSaveSaida1 = value;
-      EEPROM.write(MemSaveSaida1, ValueSaveSaida1);
-      digitalWrite(A0, ValueSaveSaida1);
+      
+      digitalWrite(A0, HIGH);
+      ValueSaveSaida1 = 1;
+      RetornaComandos();
+      delay(500);
+      digitalWrite(A0, LOW);      
+      ValueSaveSaida1 = 0;
+      RetornaComandos();
+      delay(1500);      
+      
+      digitalWrite(A0, HIGH);
+      ValueSaveSaida1 = 1;
+      RetornaComandos();
+      delay(500);
+      digitalWrite(A0, LOW);      
+      ValueSaveSaida1 = 0;
+      RetornaComandos();
+      delay(1500);      
+      
+      
+      digitalWrite(A0, HIGH);
+      ValueSaveSaida1 = 1;
+      RetornaComandos();
+      delay(500);
+      digitalWrite(A0, LOW);   
+      ValueSaveSaida1 = 0;   
+      RetornaComandos();
+      delay(1500);      
+      
+      
+      digitalWrite(A0, HIGH);
+      ValueSaveSaida1 = 1;
+      RetornaComandos();
+      delay(500);
+      digitalWrite(A0, LOW);    
+      ValueSaveSaida1 = 0;  
+      RetornaComandos();
+      delay(1500);      
+      
+      
+      digitalWrite(A0, HIGH);
+      ValueSaveSaida1 = 1;
+      RetornaComandos();
+      delay(500);
+      digitalWrite(A0, LOW);      
+      ValueSaveSaida1 = 0; 
+      RetornaComandos();
+      delay(1500);      
+      
+      
+      digitalWrite(A0, HIGH);
+      ValueSaveSaida1 = 1;
+      RetornaComandos();
+      delay(500);
+      digitalWrite(A0, LOW);    
+      ValueSaveSaida1 = 0;  
+      RetornaComandos();  
+                  
     }
     else if (port == 2)
     {
