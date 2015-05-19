@@ -20,17 +20,23 @@ right()                        Move the cursor to the right
 keypad()                        Read a value from the keypad. Returns 0 if no key press is in the buffer
 
 
+requer biblioteca
+https://github.com/adafruit/DHT-sensor-library
+
 */
 
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EEPROM.h>
+#include <avr/wdt.h>
 #include "Wire.h"
-#include <LiquidCrystal_I2C.h>	// For the LCD
+//#include <LiquidCrystal_I2C.h>	// For the LCD
+//#include "DHT.h"
 
-#include "DHT.h"
-#define DHTPIN 8
-#define DHTTYPE DHT11
+
+//#define DHTPIN A2 
+//#define DHTTYPE DHT11
+
 
 LiquidCrystal_I2C lcd(0x27, 16, 2); // set the LCD address to 0x27 for a 16 chars and 2 line display
 #define DS1307_I2C_ADDRESS 0x68
@@ -90,8 +96,6 @@ int ValueRed = 0; //Conteudo de memoria  Red
 int ValueGreen = 0; //Conteudo de memoria  Green
 int ValueBlue = 0; //Conteudo de memoria  Blue
 
-float humidity;
-float temp;
 
 int S1 = 0;
 int S2 = 0;
@@ -101,15 +105,14 @@ int LedR = 0;
 int LedG = 0;
 int LedB = 0;
 
-int countLcd = 0;
-
 String readString;
-byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
+char inputBuffer[10];   // For incoming serial data - PH
 
-DHT dht(DHTPIN, DHTTYPE);
+byte second, minute, hour, dayOfWeek, dayOfMonth, month, year;
 
 void setup() {
 
+  wdt_enable(WDTO_8S); //Habilita Watchdog em 8 Segundos
   Wire.begin();
 
   Ethernet.begin(mac, ip, gateway, subnet);
@@ -150,16 +153,11 @@ void setup() {
   lcd.init();
   lcd.begin(20, 4);
   lcd.clear();
-
-  dht.begin();
 }
 
 void loop() {
-
   getDateDs1307(&second, &minute, &hour, &dayOfWeek, &dayOfMonth, &month, &year);
-  humidity = dht.readHumidity();
-  temp = dht.readTemperature();
-
+  
   S1 = digitalRead(A0);
   S2 = digitalRead(A1);
   S3 = digitalRead(A2);
@@ -172,12 +170,13 @@ void loop() {
   WebServer();
   ModoAuto();
   PrintLcd();
+  wdt_reset(); //Reset do WatchDog
 }
 
-void PrintLcd() {
-
+void PrintLcd(){
+  
   lcd.backlight();
-
+  
   lcd.setCursor(0, 0);
   if (dayOfMonth < 10)
     lcd.print("0");
@@ -201,59 +200,44 @@ void PrintLcd() {
     lcd.print("0");
   lcd.print(second);
 
-  countLcd++;
+  lcd.setCursor(0, 1);
+  lcd.print("Consumo: 330W");
+  lcd.setCursor(0, 2);  
+  lcd.print("Temp:20 Umi:60%");
   
-  if (countLcd <= 50)
-  {
-
-    lcd.setCursor(0, 1);
-    lcd.print("Temp:");
-    lcd.print(temp);
-    lcd.print("-");
-    lcd.print(humidity);
-    lcd.print("%");
-  }
-  else
-  {
-    lcd.setCursor(0, 1);
-    lcd.print("Saidas:");
-    if (S1 == 1 )
-      lcd.print("1");
-    else
-      lcd.print(" ");
-    if (S2 == 1 )
-      lcd.print("2");
-    else
-      lcd.print(" ");
-    if (S3 == 1 )
-      lcd.print("3");
-    else
-      lcd.print(" ");
-    if (S4 == 1 )
-      lcd.print("4");
-    else
-      lcd.print(" ");
-
-    if (LedR > 10 )
-      lcd.print("R");
-    else
-      lcd.print(" ");
-    if (LedG > 10 )
-      lcd.print("G");
-    else
-      lcd.print(" ");
-
-    if (LedB > 10 )
-      lcd.print("B     ");
-    else
-      lcd.print("      ");
-  }
- 
-  if(countLcd >=100)
-    countLcd = 0;
-
-
-
+  lcd.setCursor(0, 3);
+  lcd.print("Saidas:");  
+  if(S1 == 1 )
+    lcd.print("1");
+  else  
+    lcd.print(" ");
+  if(S2 == 1 )
+    lcd.print("2");
+  else  
+    lcd.print(" ");
+  if(S3 == 1 )
+    lcd.print("3");
+  else  
+    lcd.print(" ");
+  if(S4 == 1 )
+    lcd.print("4");0
+    
+  else  
+    lcd.print(" ");
+    
+  if(LedR > 10 )
+    lcd.print("R");
+  else  
+    lcd.print(" ");
+  if(LedG > 10 )
+    lcd.print("G");
+  else  
+    lcd.print(" ");
+    
+  if(LedB > 10 )
+    lcd.print("B");
+  else  
+    lcd.print(" ");           
 }
 
 void WebServer() {
@@ -303,9 +287,9 @@ void WebServer() {
             //Serial.println(Hora);
             //Serial.println(Minuto);
 
-           // Serial.println(Dia);
-           // Serial.println(Mes);
-           // Serial.println(Ano);
+            Serial.println(Dia);
+            Serial.println(Mes);
+            Serial.println(Ano);
 
 
             second = 0;
@@ -316,9 +300,9 @@ void WebServer() {
             month = Mes.toInt();
             year = Ano.toInt();
 
-           // Serial.println(dayOfMonth);
-           // Serial.println(month);
-           // Serial.println(year);
+            Serial.println(dayOfMonth);
+            Serial.println(month);
+            Serial.println(year);
 
             setDateDs1307(second, minute, hour, dayOfWeek, dayOfMonth, month, year);
           }
@@ -442,8 +426,8 @@ void WebServer() {
             EEPROM.write(MemSaida1HrF, cmd);
             ValueSaida1HrF = cmd;
 
-       //     Serial.println(ValueSaida1HrI);
-       //     Serial.println(ValueSaida1HrF);
+            Serial.println(ValueSaida1HrI);
+            Serial.println(ValueSaida1HrF);
 
           }
 
@@ -513,363 +497,222 @@ void SendResponse(EthernetClient client) {
   LedG = analogRead(5);
   LedB = analogRead(3);
 
+  String bloqueiaAcao = "";
+  client.println(F("<html><head><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'><style>th{background-color: #3E4551;color: #FFFFFF;}</style>"));
+  client.println(F("</head><body><div class='container'><div class='row'>"));
+  client.println(F("<table class='table table-bordered'><tr><th width=140px>Modo:</th><th colspan=2><label class='radio-inline'>"));
 
-    String bloqueiaAcao = "";
-    client.println(F("<html><head><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css'><style>th{background-color: #3E4551;color: #FFFFFF;}</style>"));
-    client.println(F("</head><body><div class='container'><div class='row'>"));
-    client.println(F("<table class='table table-bordered'><tr><th width=140px>Modo:</th><th colspan=2><label class='radio-inline'>"));
+  client.print(F("<input type='radio' name='rdModo' id='rdModoM' value='M' onclick='document.location.href=\"/?AUTOD\"' "));
+  if (ValueSaveAuto == 0)
+  {
+    client.print(F(" checked"));
+  }
+  client.println(F("> Manual</label>"));
 
-    client.print(F("<input type='radio' name='rdModo' id='rdModoM' value='M' onclick='document.location.href=\"/?AUTOD\"' "));
-    if (ValueSaveAuto == 0)
-    {
-      client.print(F(" checked"));
-    }
-    client.println(F("> Manual</label>"));
+  client.print(F("<label class='radio-inline'><input type='radio' name='rdModo' id='rdModoA' value='A' onclick='document.location.href=\"/?AUTOL\"' "));
+  if (ValueSaveAuto == 1)
+  {
+    client.print(F(" checked"));
+    bloqueiaAcao = " disabled ";
+  }
 
-    client.print(F("<label class='radio-inline'><input type='radio' name='rdModo' id='rdModoA' value='A' onclick='document.location.href=\"/?AUTOL\"' "));
-    if (ValueSaveAuto == 1)
-    {
-      client.print(F(" checked"));
-      bloqueiaAcao = " disabled ";
-    }
+  client.println(F(">Agendado</label></th><tr>"));
+  client.print(F("<tr><td>Horario Placa </td><td> <input type='text' style='width:140px;' id='txtdt' value='"));
+  if (dayOfMonth < 10)
+    client.print(F("0"));
 
-    client.println(F(">Agendado</label></th><tr>"));
-    client.print(F("<tr><td>Horario Placa </td><td> <input type='text' style='width:140px;' id='txtdt' value='"));
-    if (dayOfMonth < 10)
-      client.print(F("0"));
+  client.print(dayOfMonth, DEC);
+  client.print(F("/"));
+  if (month < 10)
+    client.print(F("0"));
 
-    client.print(dayOfMonth, DEC);
-    client.print(F("/"));
-    if (month < 10)
-      client.print(F("0"));
+  client.print(month, DEC);
+  client.print(F("/20"));
+  if (year < 10)
+    client.print(F("0"));
+  client.print(year, DEC);
+  client.print(F("'> "));
+  client.print(F("<input type='text' style='width:60px;' id='txthr' value='"));
+  if (hour < 10)
+    client.print(F("0"));
 
-    client.print(month, DEC);
-    client.print(F("/20"));
-    if (year < 10)
-      client.print(F("0"));
-    client.print(year, DEC);
-    client.print(F("'> "));
-    client.print(F("<input type='text' style='width:60px;' id='txthr' value='"));
-    if (hour < 10)
-      client.print(F("0"));
-
-    client.print(hour, DEC);
-    client.print(F(":"));
-    if (minute < 10)
-      client.print(F("0"));
-    client.print(minute, DEC);
-    client.print(F("'> <button type='button' id='b1' class='btn btn-info' onclick='javascript:AlteraHr();'>Alterar</button></td>"));
-    client.println(F("<tr><th width=140px>Saida</th><th colspan=2>Acao</th></tr>"));
-
-
-/*
-    //Inicio S1
-    if (S1 == 1)
-    {
-      client.println(F("<tr><td>Saida 1 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S1D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 1 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S1L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td><td><input type='number' style='width:40px;' id='txtS1I' min='1' max='23' value='"));
-    client.print(ValueSaida1HrI, DEC);
-    client.print(F("'><label for = 'S1I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS1F' min='1' max='23' value='"));
-    client.print(ValueSaida1HrF, DEC);
-    client.print(F("'><label for = 'S1I'>:59</label>&nbsp;<button type='button' id='btS1A' class='btn btn-info' onclick='javascript:AlteraAg(\"S1\")'>Alterar</button></td></tr>"));
-    //FIM S1
-
-    //Inicio S2
-    if (S2 == 1)
-    {
-      client.println(F("<tr><td>Saida 2 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S2D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 2 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S2L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td><td><input type='number' style='width:40px;' id='txtS2I' min='2' max='23' value='"));
-    client.print(ValueSaida2HrI, DEC);
-    client.print(F("'><label for = 'S2I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS2F' min='2' max='23' value='"));
-    client.print(ValueSaida2HrF, DEC);
-    client.print(F("'><label for = 'S2I'>:59</label>&nbsp;<button type='button' id='btS2A' class='btn btn-info' onclick='javascript:AlteraAg(\"S2\")'>Alterar</button></td></tr>"));
-    //FIM S2
-
-    //Inicio S3
-    if (S3 == 1)
-    {
-      client.println(F("<tr><td>Saida 3 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S3D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 3 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S3L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td><td><input type='number' style='width:40px;' id='txtS3I' min='3' max='33' value='"));
-    client.print(ValueSaida3HrI, DEC);
-    client.print(F("'><label for = 'S3I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS3F' min='3' max='33' value='"));
-    client.print(ValueSaida3HrF, DEC);
-    client.print(F("'><label for = 'S3I'>:59</label>&nbsp;<button type='button' id='btS3A' class='btn btn-info' onclick='javascript:AlteraAg(\"S3\")'>Alterar</button></td></tr>"));
-    //FIM S3
-
-    //Inicio S4
-    if (S4 == 1)
-    {
-      client.println(F("<tr><td>Saida 4 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S4D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 4 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S4L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td><td><input type='number' style='width:40px;' id='txtS4I' min='1' max='23' value='"));
-    client.print(ValueSaida4HrI, DEC);
-    client.print(F("'><label for = 'S4I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS4F' min='1' max='23' value='"));
-    client.print(ValueSaida4HrF, DEC);
-    client.print(F("'><label for = 'S4I'>:59</label>&nbsp;<button type='button' id='btS4A' class='btn btn-info' onclick='javascript:AlteraAg(\"S4\")'>Alterar</button></td></tr>"));
-    //FIM S4
-
-
-    //Inicio RGB
-    client.println(F("<tr><td>RGB - Ligado</td><td>"));
-
-    //Inicio RED
-    client.print(F("<a class='btn btn"));
-    if (ValueRed > 0 && ValueBlue == 0 && ValueGreen == 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?RED' type='button' >Red</button>"));
-    //FIM RED
-
-    //Inicio Green
-    client.print(F("<a class='btn btn"));
-    if (ValueRed == 0 && ValueBlue == 0 && ValueGreen > 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?GREEN' type='button' >Green</button>"));
-    //FIM Green
-
-    //Inicio Blue
-    client.print(F("<a class='btn btn"));
-    if (ValueRed == 0 && ValueBlue > 0 && ValueGreen == 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?BLUE' type='button' >Blue</button>"));
-    //FIM Blue
-
-    //Inicio White
-    client.print(F("<a class='btn btn"));
-    if (ValueRed > 0 && ValueBlue > 0 && ValueGreen > 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?WHITE' type='button' >White</button>"));
-    //FIM Blue
-
-    //Inicio OFF
-    client.print(F("<a class='btn btn"));
-    if (ValueRed == 0 && ValueBlue == 0 && ValueGreen == 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-
-    client.print(bloqueiaAcao);
-    client.print(F(" href='/?RGBOFF' type='button' >Desligar</button>"));
-    //FIM Blue
-
-    client.print(F("</td><td><input type='number' style='width:40px;' id='txtRGBI' min='4' max='44' value='"));
-    client.print(ValueRGBHrI, DEC);
-    client.print(F("'><label for = 'RGBI'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtRGBF' min='4' max='44' value='"));
-    client.print(ValueRGBHrF, DEC);
-    client.print(F("'><label for = 'RGBI'>:59</label>&nbsp;<button type='button' id='btRGBA' class='btn btn-info' onclick='javascript:AlteraAg(\"RGB\")'>Alterar</button>"));
-    client.print(F("</td></tr>"));
-    //FIM RGB
-*/
-
+  client.print(hour, DEC);
+  client.print(F(":"));
+  if (minute < 10)
+    client.print(F("0"));
+  client.print(minute, DEC);
+  client.print(F("'> <button type='button' id='b1' class='btn btn-info' onclick='javascript:AlteraHr();'>Alterar</button></td>"));
+  client.println(F("<tr><th width=140px>Saida</th><th colspan=2>Acao</th></tr>"));
 
   //Inicio S1
-    if (S1 == 1)
-    {
-      client.println(F("<tr><td>Saida 1 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S1D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 1 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S1L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td></tr>"));
-    //FIM S1
-
-    //Inicio S2
-    if (S2 == 1)
-    {
-      client.println(F("<tr><td>Saida 2 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S2D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 2 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S2L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td></tr>"));
-    //FIM S2
-
-    //Inicio S3
-    if (S3 == 1)
-    {
-      client.println(F("<tr><td>Saida 3 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S3D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 3 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S3L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td></tr>"));
-    //FIM S3
-
-    //Inicio S4
-    if (S4 == 1)
-    {
-      client.println(F("<tr><td>Saida 4 - Ligada</td><td>"));
-      client.println(F("<a class='btn btn-danger' href='/?S4D' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Desligar</button>"));
-    }
-    else
-    {
-      client.println(F("<tr><td>Saida 4 - Desligada</td><td>"));
-      client.println(F("<a class='btn btn-success' href='/?S4L' type='button' "));
-      client.print(bloqueiaAcao);
-      client.print(F(">Ligar</button>"));
-
-    }
-
-    client.print(F("</td></tr>"));
-    //FIM S4
-
-
-    //Inicio RGB
-    client.println(F("<tr><td>RGB - Ligado</td><td>"));
-
-    //Inicio RED
-    client.print(F("<a class='btn btn"));
-    if (ValueRed > 0 && ValueBlue == 0 && ValueGreen == 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?RED' type='button' >Red</button>"));
-    //FIM RED
-
-    //Inicio Green
-    client.print(F("<a class='btn btn"));
-    if (ValueRed == 0 && ValueBlue == 0 && ValueGreen > 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?GREEN' type='button' >Green</button>"));
-    //FIM Green
-
-    //Inicio Blue
-    client.print(F("<a class='btn btn"));
-    if (ValueRed == 0 && ValueBlue > 0 && ValueGreen == 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?BLUE' type='button' >Blue</button>"));
-    //FIM Blue
-
-    //Inicio White
-    client.print(F("<a class='btn btn"));
-    if (ValueRed > 0 && ValueBlue > 0 && ValueGreen > 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-    client.print(F(" href='/?WHITE' type='button' >White</button>"));
-    //FIM Blue
-
-    //Inicio OFF
-    client.print(F("<a class='btn btn"));
-    if (ValueRed == 0 && ValueBlue == 0 && ValueGreen == 0 )
-      client.print(F("-danger'"));
-    else
-      client.print(F("-success'"));
-
+  if (S1 == 1)
+  {
+    client.println(F("<tr><td>Saida 1 - Ligada</td><td>"));
+    client.println(F("<a class='btn btn-danger' href='/?S1D' type='button' "));
     client.print(bloqueiaAcao);
-    client.print(F(" href='/?RGBOFF' type='button' >Desligar</button>"));
-    //FIM Blue
+    client.print(F(">Desligar</button>"));
+  }
+  else
+  {
+    client.println(F("<tr><td>Saida 1 - Desligada</td><td>"));
+    client.println(F("<a class='btn btn-success' href='/?S1L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
 
-    client.print(F("</td></tr>"));
-    
-    
-    client.println(F("</table><script>"));
-    client.println(F("function AlteraHr() {"));
-    client.println(F("var da = document.getElementById(\"txtdt\").value;"));
-    client.println(F("var hr = document.getElementById(\"txthr\").value;"));
-    client.println(F("var cmd = \"/?DataHora\" + \"y\" + da + \"yz\" + hr + \"z\";"));
-    client.println(F("location.href = cmd;}"));
-    client.println(F("function AlteraAg(saida) {"));
-    client.println(F("var hrI = document.getElementById(\"txt\" + saida + \"I\").value;"));
-    client.println(F("var hrF = document.getElementById(\"txt\" + saida + \"F\").value;"));
-    client.println(F("var cmd = \"/?Age\" + saida + \"HrI\" + \"y\" + hrI + \"yz\" + hrF + \"z\";"));
-    client.println(F("location.href = cmd;}"));
-    client.println(F("</script><html>"));
+  }
 
-    client.println();
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS1I' min='1' max='23' value='"));
+  client.print(ValueSaida1HrI, DEC);
+  client.print(F("'><label for = 'S1I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS1F' min='1' max='23' value='"));
+  client.print(ValueSaida1HrF, DEC);
+  client.print(F("'><label for = 'S1I'>:59</label>&nbsp;<button type='button' id='btS1A' class='btn btn-info' onclick='javascript:AlteraAg(\"S1\")'>Alterar</button></td></tr>"));
+  //FIM S1
+
+  //Inicio S2
+  if (S2 == 1)
+  {
+    client.println(F("<tr><td>Saida 2 - Ligada</td><td>"));
+    client.println(F("<a class='btn btn-danger' href='/?S2D' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Desligar</button>"));
+  }
+  else
+  {
+    client.println(F("<tr><td>Saida 2 - Desligada</td><td>"));
+    client.println(F("<a class='btn btn-success' href='/?S2L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
+
+  }
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS2I' min='2' max='23' value='"));
+  client.print(ValueSaida2HrI, DEC);
+  client.print(F("'><label for = 'S2I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS2F' min='2' max='23' value='"));
+  client.print(ValueSaida2HrF, DEC);
+  client.print(F("'><label for = 'S2I'>:59</label>&nbsp;<button type='button' id='btS2A' class='btn btn-info' onclick='javascript:AlteraAg(\"S2\")'>Alterar</button></td></tr>"));
+  //FIM S2
+
+  //Inicio S3
+  if (S3 == 1)
+  {
+    client.println(F("<tr><td>Saida 3 - Ligada</td><td>"));
+    client.println(F("<a class='btn btn-danger' href='/?S3D' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Desligar</button>"));
+  }
+  else
+  {
+    client.println(F("<tr><td>Saida 3 - Desligada</td><td>"));
+    client.println(F("<a class='btn btn-success' href='/?S3L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
+
+  }
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS3I' min='3' max='33' value='"));
+  client.print(ValueSaida3HrI, DEC);
+  client.print(F("'><label for = 'S3I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS3F' min='3' max='33' value='"));
+  client.print(ValueSaida3HrF, DEC);
+  client.print(F("'><label for = 'S3I'>:59</label>&nbsp;<button type='button' id='btS3A' class='btn btn-info' onclick='javascript:AlteraAg(\"S3\")'>Alterar</button></td></tr>"));
+  //FIM S3
+
+  //Inicio S4
+  if (S4 == 1)
+  {
+    client.println(F("<tr><td>Saida 4 - Ligada</td><td>"));
+    client.println(F("<a class='btn btn-danger' href='/?S4D' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Desligar</button>"));
+  }
+  else
+  {
+    client.println(F("<tr><td>Saida 4 - Desligada</td><td>"));
+    client.println(F("<a class='btn btn-success' href='/?S4L' type='button' "));
+    client.print(bloqueiaAcao);
+    client.print(F(">Ligar</button>"));
+
+  }
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtS4I' min='1' max='23' value='"));
+  client.print(ValueSaida4HrI, DEC);
+  client.print(F("'><label for = 'S4I'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtS4F' min='1' max='23' value='"));
+  client.print(ValueSaida4HrF, DEC);
+  client.print(F("'><label for = 'S4I'>:59</label>&nbsp;<button type='button' id='btS4A' class='btn btn-info' onclick='javascript:AlteraAg(\"S4\")'>Alterar</button></td></tr>"));
+  //FIM S4
+
+  //Inicio RGB
+  client.println(F("<tr><td>RGB - Ligado</td><td>"));
+
+  //Inicio RED
+  client.print(F("<a class='btn btn"));
+  if (ValueRed > 0 && ValueBlue == 0 && ValueGreen == 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?RED' type='button' >Red</button>"));
+  //FIM RED
+
+  //Inicio Green
+  client.print(F("<a class='btn btn"));
+  if (ValueRed == 0 && ValueBlue == 0 && ValueGreen > 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?GREEN' type='button' >Green</button>"));
+  //FIM Green
+
+  //Inicio Blue
+  client.print(F("<a class='btn btn"));
+  if (ValueRed == 0 && ValueBlue > 0 && ValueGreen == 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?BLUE' type='button' >Blue</button>"));
+  //FIM Blue
+
+  //Inicio White
+  client.print(F("<a class='btn btn"));
+  if (ValueRed > 0 && ValueBlue > 0 && ValueGreen > 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+  client.print(F(" href='/?WHITE' type='button' >White</button>"));
+  //FIM Blue
+
+  //Inicio OFF
+  client.print(F("<a class='btn btn"));
+  if (ValueRed == 0 && ValueBlue == 0 && ValueGreen == 0 )
+    client.print(F("-danger'"));
+  else
+    client.print(F("-success'"));
+
+  client.print(bloqueiaAcao);
+  client.print(F(" href='/?RGBOFF' type='button' >Desligar</button>"));
+  //FIM Blue
+
+  client.print(F("</td><td><input type='number' style='width:40px;' id='txtRGBI' min='4' max='44' value='"));
+  client.print(ValueRGBHrI, DEC);
+  client.print(F("'><label for = 'RGBI'>:00 &nbsp;ate&nbsp;</label><input type='number' style='width:40px;' id='txtRGBF' min='4' max='44' value='"));
+  client.print(ValueRGBHrF, DEC);
+  client.print(F("'><label for = 'RGBI'>:59</label>&nbsp;<button type='button' id='btRGBA' class='btn btn-info' onclick='javascript:AlteraAg(\"RGB\")'>Alterar</button>"));
+  client.print(F("</td></tr>"));
+  //FIM RGB
 
 
+  client.println(F("</table><script>"));
+  client.println(F("function AlteraHr() {"));
+  client.println(F("var da = document.getElementById(\"txtdt\").value;"));
+  client.println(F("var hr = document.getElementById(\"txthr\").value;"));
+  client.println(F("var cmd = \"/?DataHora\" + \"y\" + da + \"yz\" + hr + \"z\";"));
+  client.println(F("location.href = cmd;}"));
+  client.println(F("function AlteraAg(saida) {"));
+  client.println(F("var hrI = document.getElementById(\"txt\" + saida + \"I\").value;"));
+  client.println(F("var hrF = document.getElementById(\"txt\" + saida + \"F\").value;"));
+  client.println(F("var cmd = \"/?Age\" + saida + \"HrI\" + \"y\" + hrI + \"yz\" + hrF + \"z\";"));
+  client.println(F("location.href = cmd;}"));
+  client.println(F("</script><html>"));
+
+  client.println();
 
 }
 
@@ -996,4 +839,7 @@ void setDateDs1307(byte second,        // 0-59
   Wire.write(decToBcd(year));
   Wire.endTransmission();
 }
+
+
+
 
