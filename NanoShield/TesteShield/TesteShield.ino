@@ -26,29 +26,29 @@ void loop()
 {    
 
   digitalWrite(A0, HIGH);    
-  delay(100);
+  delay(500);
   digitalWrite(A0, LOW);    
   digitalWrite(A1, HIGH);      
-  delay(100);
+  delay(500);
   digitalWrite(A1, LOW);    
   digitalWrite(A2, HIGH);      
-  delay(100);
+  delay(500);
   digitalWrite(A2, LOW);    
   digitalWrite(A3, HIGH);      
-  delay(100);
+  delay(500);
   digitalWrite(A3, LOW);    
   analogWrite(PIN_RED, 255); 
-  delay(100);
+  delay(500);
   digitalWrite(PIN_RED, 0);    
   analogWrite(PIN_GREEN, 255); 
-  delay(100);
+  delay(500);
   digitalWrite(PIN_GREEN, 0);    
   analogWrite(PIN_BLUE, 255); 
-  delay(100);
+  delay(500);
   analogWrite(PIN_BLUE, 255);    
   analogWrite(PIN_RED, 255);    
   analogWrite(PIN_GREEN, 255);      
-  delay(100);
+  delay(500);
   analogWrite(PIN_BLUE, 0);    
   analogWrite(PIN_RED, 0);    
   analogWrite(PIN_GREEN, 0);    
