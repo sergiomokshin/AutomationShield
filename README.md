@@ -2,7 +2,7 @@
 
 Desenvolvido com o objetivo de simplificar a criação de projetos de automação. É compatível com o Arduino Nano V3 e pode ser usada em diversos projetos de automação, monitoramento, temporizadores, entre outros. 
 
-![Automation Shield](https://github.com/sergiomokshin/AutomationHome/blob/master/Imagens/AutomationHomePCB.png)\
+![Automation Shield](http://2.bp.blogspot.com/-3SkegE5IOJI/VMkj9KsNF3I/AAAAAAAAHg4/j7NDYE7RcLY/s1600/IMG_20120922_233114_621.jpg)
 
 Os IOs da placa possuem Jumpers que permitem a inativação ou troca do pino utilizado no Arduino, permitindo expansão ou troca de funcionalidades.
 
