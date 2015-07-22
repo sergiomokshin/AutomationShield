@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="#FF333333"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    tools:context=".SetupDevice">
+
+    <LinearLayout
+        android:textColor="#FFFFFF"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="5dp">
+        <TextView
+            android:id="@+id/txtS1"
+            android:textColor="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Saída 1" />
+        <EditText
+            android:id="@+id/edtS1"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="20"
+            android:layout_width="140dp"
+            android:textColor="#FFFFFF">
+        </EditText>     
+    </LinearLayout>
+
+    <LinearLayout
+        android:textColor="#FFFFFF"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="5dp">
+        <TextView
+            android:id="@+id/txtS2"
+            android:textColor="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Saída 2" />
+        <EditText
+            android:id="@+id/edtS2"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="20"
+            android:layout_width="140dp"
+            android:textColor="#FFFFFF">
+        </EditText>      
+    </LinearLayout>
+
+    <LinearLayout
+        android:textColor="#FFFFFF"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="5dp">
+        <TextView
+            android:id="@+id/txtS3"
+            android:textColor="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Saída 3" />
+        <EditText
+            android:id="@+id/edtS3"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="20"
+            android:layout_width="140dp"
+            android:textColor="#FFFFFF">
+        </EditText>      
+    </LinearLayout>
+
+    <LinearLayout
+        android:textColor="#FFFFFF"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="5dp">
+        <TextView
+            android:id="@+id/txtS4"
+            android:textColor="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Saída 4" />
+        <EditText
+            android:id="@+id/edtS4"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="20"
+            android:layout_width="140dp"
+            android:textColor="#FFFFFF">
+        </EditText>     
+    </LinearLayout>
+
+   
+
+    <LinearLayout
+        android:textColor="#FFFFFF"
+        android:gravity="center_vertical"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:padding="5dp">
+        <TextView
+            android:id="@+id/txtSRGB"
+            android:textColor="#FFFFFF"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Iluminacao" />
+        <EditText
+            android:id="@+id/edtSRGB"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="20"
+            android:layout_width="140dp"
+            android:textColor="#FFFFFF">
+        </EditText>       
+   </LinearLayout>
+
+
+   <Button
+       android:id="@+id/btAlterar"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:textColor="#FFFFFF"
+       android:text="Alterar" />
+
+</LinearLayout>
